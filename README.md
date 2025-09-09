@@ -38,8 +38,8 @@ projeto-gin/
 
 1. Clone o repositório:
 ```bash
-git clone <url-do-repositorio>
-cd projeto-gin
+git clone https://github.com/Kovokar/socialVoleiAPI
+cd socialVoleiAPI
 ```
 
 2. Instale as dependências:
@@ -53,11 +53,6 @@ cp .env.example .env
 # Edite o arquivo .env com suas configurações
 ```
 
-4. Execute as migrações do banco de dados:
-```bash
-make migrate
-```
-
 ## 🏃‍♂️ Executando a aplicação
 
 ### Modo desenvolvimento
@@ -65,15 +60,15 @@ make migrate
 go run cmd/server/main.go
 ```
 
-### Com Docker
+<!-- ### Com Docker
 ```bash
 docker-compose up -d
-```
+``` -->
 
-### Usando Makefile
+<!-- ### Usando Makefile
 ```bash
 make run
-```
+``` -->
 
 A aplicação estará disponível em `http://localhost:8080`
 
@@ -96,7 +91,7 @@ A aplicação estará disponível em `http://localhost:8080`
 - `PUT /products/:id` - Atualiza produto
 - `DELETE /products/:id` - Remove produto
 
-## 🧪 Testes
+<!-- ## 🧪 Testes
 
 Execute todos os testes:
 ```bash
@@ -118,7 +113,7 @@ make migrate      # Executa migrações
 make seed         # Popula banco com dados de teste
 make docker-build # Constrói imagem Docker
 make clean        # Limpa arquivos temporários
-```
+``` -->
 
 ## 🌱 Variáveis de Ambiente
 
@@ -138,12 +133,9 @@ DB_NAME=gin_db
 JWT_SECRET=sua-chave-secreta
 JWT_EXPIRES_IN=24h
 
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
 ```
 
-## 🐳 Docker
+<!-- ## 🐳 Docker
 
 Para executar com Docker Compose:
 
@@ -174,4 +166,4 @@ Seu Nome - [@seuusuario](https://github.com/seuusuario)
 
 ---
 
-⭐ Se este projeto te ajudou, considere dar uma estrela!
+⭐ Se este projeto te ajudou, considere dar uma estrela! -->
