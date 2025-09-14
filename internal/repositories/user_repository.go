@@ -14,10 +14,31 @@ func NewUserRepository() UserRepository {
 }
 
 func (r *userRepository) GetAll() ([]models.User, error) {
-	// mock temporário
 	users := []models.User{
-		{ID: 1, Name: "Alice", Email: "alice@mail.com"},
-		{ID: 2, Name: "Bob", Email: "bob@mail.com"},
+		{
+			ID:            1,
+			Name:          "Alice",
+			Email:         "alice@mail.com",
+			Telefone:      "(11) 99999-0001",
+			Longitude:     -46.6333,
+			Latitude:      -23.5505,
+			Senha:         "senha123",
+			CodigoConvite: "ABC123",
+			Sexo:          "F",
+			Categoria:     "comum",
+		},
+		{
+			ID:            2,
+			Name:          "Bob",
+			Email:         "bob@mail.com",
+			Telefone:      "(11) 99999-0002",
+			Longitude:     -46.6388,
+			Latitude:      -23.5587,
+			Senha:         "senha456",
+			CodigoConvite: "XYZ789",
+			Sexo:          "M",
+			Categoria:     "premium",
+		},
 	}
 	return users, nil
 }

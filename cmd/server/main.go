@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"socialVoleiAPI/internal/routes"
 
@@ -26,9 +27,12 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "API Social Volei está no ar! 🏐"})
 	})
 
+	// rotas
 	routes.RegisterUserRoutes(r)
 
 	// rota do swagger
-	r.GET("/swagger/index.html", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	fmt.Println("[GIN-debug] GET    /swagger/index.html             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (3 handlers)")
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	r.Run(":8080")
 }
