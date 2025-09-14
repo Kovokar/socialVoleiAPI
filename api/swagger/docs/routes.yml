@@ -1,913 +1,810 @@
-openapi: 3.0.4
+openapi: 3.0.0
 info:
-  title: Swagger Petstore - OpenAPI 3.0
-  description: |-
-    This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
-    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
-    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
-    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
-
-    Some useful links:
-    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
-    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
-  termsOfService: https://swagger.io/terms/
-  contact:
-    email: apiteam@swagger.io
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.12
-externalDocs:
-  description: Find out more about Swagger
-  url: https://swagger.io
+  title: API Comunidade de Vôlei
+  version: 1.0.0
+  description: API para comunidade online de praticantes de vôlei com sistema de convites e organização de partidas
 servers:
-  - url: https://petstore3.swagger.io/api/v3
+  - url: http://localhost:3000
+    description: Servidor local de desenvolvimento
 tags:
-  - name: pet
-    description: Everything about your Pets
-    externalDocs:
-      description: Find out more
-      url: https://swagger.io
-  - name: store
-    description: Access to Petstore orders
-    externalDocs:
-      description: Find out more about our store
-      url: https://swagger.io
+  - name: auth
+    description: Autenticação e registro
   - name: user
-    description: Operations about user
+    description: Operações de usuário
+  - name: invite
+    description: Sistema de convites
+  - name: match
+    description: Gestão de partidas
+  - name: rating
+    description: Avaliações e reputação
+
 paths:
-  /pet:
-    put:
-      tags:
-        - pet
-      summary: Update an existing pet.
-      description: Update an existing pet by Id.
-      operationId: updatePet
+  # AUTH ENDPOINTS (já existentes)
+  /auth/register:
+    post:
+      tags: 
+        - auth
+      summary: Registro de usuário (apenas via convite)
       requestBody:
-        description: Update an existent pet in the store
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pet'
-        required: true
+              type: object
+              required:
+                - nome
+                - email
+                - senha
+                - codigoConvite
+                - sexo
+                - categoria
+              properties:
+                nome:
+                  type: string
+                  example: João Silva
+                email:
+                  type: string
+                  example: joao@email.com
+                telefone:
+                  type: string
+                  example: "(11) 99999-9999"
+                longitude:
+                  type: number
+                  example: -46.6333
+                latitude:
+                  type: number
+                  example: -23.5505
+                senha:
+                  type: string
+                  format: password
+                  example: senha123
+                codigoConvite:
+                  type: string
+                  example: "ABC123XYZ"
+                sexo:
+                  type: string
+                  enum: [M, F, Outro]
+                  example: M
+                categoria:
+                  type: string
+                  enum: [iniciante, intermediario, avancado, master]
+                  example: intermediario
       responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
+        '201':
+          description: Usuário registrado com sucesso
         '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-        '422':
-          description: Validation exception
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+          description: Dados inválidos ou convite inexistente
+        '409':
+          description: Email já cadastrado
+
+  /auth/login:
     post:
-      tags:
-        - pet
-      summary: Add a new pet to the store.
-      description: Add a new pet to the store.
-      operationId: addPet
+      tags: 
+        - auth
+      summary: Login de usuário
       requestBody:
-        description: Create a new pet in the store
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pet'
-        required: true
+              type: object
+              required:
+                - email
+                - senha
+              properties:
+                email:
+                  type: string
+                  example: joao@email.com
+                senha:
+                  type: string
+                  format: password
+                  example: senha123
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid input
-        '422':
-          description: Validation exception
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/findByStatus:
-    get:
-      tags:
-        - pet
-      summary: Finds Pets by status.
-      description: Multiple status values can be provided with comma separated strings.
-      operationId: findPetsByStatus
-      parameters:
-        - name: status
-          in: query
-          description: Status values that need to be considered for filter
-          required: false
-          explode: true
-          schema:
-            type: string
-            default: available
-            enum:
-              - available
-              - pending
-              - sold
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid status value
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/findByTags:
-    get:
-      tags:
-        - pet
-      summary: Finds Pets by tags.
-      description: Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
-      operationId: findPetsByTags
-      parameters:
-        - name: tags
-          in: query
-          description: Tags to filter by
-          required: false
-          explode: true
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid tag value
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/{petId}:
-    get:
-      tags:
-        - pet
-      summary: Find pet by ID.
-      description: Returns a single pet.
-      operationId: getPetById
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet to return
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - api_key: []
-        - petstore_auth:
-            - write:pets
-            - read:pets
-    post:
-      tags:
-        - pet
-      summary: Updates a pet in the store with form data.
-      description: Updates a pet resource based on the form data.
-      operationId: updatePetWithForm
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: name
-          in: query
-          description: Name of pet that needs to be updated
-          schema:
-            type: string
-        - name: status
-          in: query
-          description: Status of pet that needs to be updated
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid input
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-    delete:
-      tags:
-        - pet
-      summary: Deletes a pet.
-      description: Delete a pet.
-      operationId: deletePet
-      parameters:
-        - name: api_key
-          in: header
-          description: ''
-          required: false
-          schema:
-            type: string
-        - name: petId
-          in: path
-          description: Pet id to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Pet deleted
-        '400':
-          description: Invalid pet value
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/{petId}/uploadImage:
-    post:
-      tags:
-        - pet
-      summary: Uploads an image.
-      description: Upload image of the pet.
-      operationId: uploadFile
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet to update
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: additionalMetadata
-          in: query
-          description: Additional Metadata
-          required: false
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/octet-stream:
-            schema:
-              type: string
-              format: binary
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: No file uploaded
-        '404':
-          description: Pet not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /store/inventory:
-    get:
-      tags:
-        - store
-      summary: Returns pet inventories by status.
-      description: Returns a map of status codes to quantities.
-      operationId: getInventory
-      responses:
-        '200':
-          description: successful operation
+          description: Login realizado com sucesso
           content:
             application/json:
               schema:
                 type: object
-                additionalProperties:
-                  type: integer
-                  format: int32
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+        '401':
+          description: Credenciais inválidas
+
+  # USER ENDPOINTS
+  /userdata:
+    get:
+      tags:
+        - user
+      summary: Retorna os dados do usuário autenticado
       security:
-        - api_key: []
-  /store/order:
-    post:
-      tags:
-        - store
-      summary: Place an order for a pet.
-      description: Place a new order in the store.
-      operationId: placeOrder
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Order'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Order'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Order'
+        - bearerAuth: []
       responses:
         '200':
-          description: successful operation
+          description: Dados do usuário autenticado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid input
-        '422':
-          description: Validation exception
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /store/order/{orderId}:
-    get:
-      tags:
-        - store
-      summary: Find purchase order by ID.
-      description: For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
-      operationId: getOrderById
-      parameters:
-        - name: orderId
-          in: path
-          description: ID of order that needs to be fetched
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Order not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    delete:
-      tags:
-        - store
-      summary: Delete purchase order by identifier.
-      description: For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors.
-      operationId: deleteOrder
-      parameters:
-        - name: orderId
-          in: path
-          description: ID of the order that needs to be deleted
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: order deleted
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Order not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /user:
-    post:
-      tags:
-        - user
-      summary: Create user.
-      description: This can only be done by the logged in user.
-      operationId: createUser
-      requestBody:
-        description: Created user object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /user/createWithList:
-    post:
-      tags:
-        - user
-      summary: Creates list of users with given input array.
-      description: Creates list of users with given input array.
-      operationId: createUsersWithListInput
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /user/login:
-    get:
-      tags:
-        - user
-      summary: Logs user into the system.
-      description: Log into the system.
-      operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: false
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
-              schema:
-                type: string
-                format: date-time
-          content:
-            application/xml:
-              schema:
-                type: string
-            application/json:
-              schema:
-                type: string
-        '400':
-          description: Invalid username/password supplied
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /user/logout:
-    get:
-      tags:
-        - user
-      summary: Logs out current logged in user session.
-      description: Log user out of the system.
-      operationId: logoutUser
-      parameters: []
-      responses:
-        '200':
-          description: successful operation
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /user/{username}:
-    get:
-      tags:
-        - user
-      summary: Get user by user name.
-      description: Get user detail based on username.
-      operationId: getUserByName
-      parameters:
-        - name: username
-          in: path
-          description: The name that needs to be fetched. Use user1 for testing
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/UsuarioCompleto'
+        '401':
+          description: Não autorizado
+
+  /user/profile:
     put:
       tags:
         - user
-      summary: Update user resource.
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be deleted
-          required: true
-          schema:
-            type: string
+      summary: Atualiza perfil do usuário
+      security:
+        - bearerAuth: []
       requestBody:
-        description: Update an existent user in the store
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                nome:
+                  type: string
+                telefone:
+                  type: string
+                categoria:
+                  type: string
+                  enum: [iniciante, intermediario, avancado, master]
+                longitude:
+                  type: number
+                latitude:
+                  type: number
       responses:
         '200':
-          description: successful operation
+          description: Perfil atualizado com sucesso
         '400':
-          description: bad request
-        '404':
-          description: user not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    delete:
+          description: Dados inválidos
+        '401':
+          description: Não autorizado
+
+  /user/{userId}:
+    get:
       tags:
         - user
-      summary: Delete user resource.
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
+      summary: Visualizar perfil público de outro usuário
+      security:
+        - bearerAuth: []
       parameters:
-        - name: username
+        - name: userId
           in: path
-          description: The name that needs to be deleted
           required: true
           schema:
-            type: string
+            type: integer
       responses:
         '200':
-          description: User deleted
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
-        default:
-          description: Unexpected error
+          description: Perfil público do usuário
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/UsuarioPublico'
+        '404':
+          description: Usuário não encontrado
+
+  # INVITE ENDPOINTS
+  /invites:
+    post:
+      tags:
+        - invite
+      summary: Gerar código de convite
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emailConvidado:
+                  type: string
+                  example: novo@email.com
+                observacao:
+                  type: string
+                  example: "Amigo do trabalho, joga bem"
+      responses:
+        '201':
+          description: Convite gerado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  codigoConvite:
+                    type: string
+                    example: "ABC123XYZ"
+                  validade:
+                    type: string
+                    format: date-time
+        '400':
+          description: Dados inválidos
+        '403':
+          description: Usuário não tem permissão para convidar
+
+    get:
+      tags:
+        - invite
+      summary: Listar convites enviados
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de convites
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Convite'
+
+  # MATCH ENDPOINTS
+  /matches:
+    post:
+      tags:
+        - match
+      summary: Criar nova partida
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - horario
+                - local
+                - categoria
+                - maxParticipantes
+              properties:
+                data:
+                  type: string
+                  format: date
+                  example: "2024-12-15"
+                horario:
+                  type: string
+                  format: time
+                  example: "19:00"
+                local:
+                  type: string
+                  example: "Quadra do Clube Atlético"
+                endereco:
+                  type: string
+                  example: "Rua das Flores, 123 - São Paulo/SP"
+                categoria:
+                  type: string
+                  enum: [iniciante, intermediario, avancado, master, mista]
+                sexoPermitido:
+                  type: string
+                  enum: [M, F, mista]
+                  example: mista
+                maxParticipantes:
+                  type: integer
+                  example: 12
+                custoTotal:
+                  type: number
+                  format: decimal
+                  example: 120.00
+                observacoes:
+                  type: string
+                  example: "Trazer água e toalha"
+      responses:
+        '201':
+          description: Partida criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partida'
+        '400':
+          description: Dados inválidos
+
+    get:
+      tags:
+        - match
+      summary: Listar partidas disponíveis
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [nova, emAdesao, confirmada, encerrada, realizada]
+        - name: categoria
+          in: query
+          schema:
+            type: string
+            enum: [iniciante, intermediario, avancado, master, mista]
+        - name: dataInicio
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dataFim
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de partidas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Partida'
+
+  /matches/{matchId}:
+    get:
+      tags:
+        - match
+      summary: Detalhes de uma partida específica
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalhes da partida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartidaCompleta'
+        '404':
+          description: Partida não encontrada
+
+    put:
+      tags:
+        - match
+      summary: Atualizar partida (apenas organizador)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  format: date
+                horario:
+                  type: string
+                  format: time
+                local:
+                  type: string
+                maxParticipantes:
+                  type: integer
+                custoTotal:
+                  type: number
+                observacoes:
+                  type: string
+                status:
+                  type: string
+                  enum: [nova, emAdesao, confirmada, encerrada, realizada]
+      responses:
+        '200':
+          description: Partida atualizada
+        '403':
+          description: Apenas organizador pode editar
+        '404':
+          description: Partida não encontrada
+
+  /matches/{matchId}/join:
+    post:
+      tags:
+        - match
+      summary: Solicitar participação em partida
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Solicitação enviada
+        '400':
+          description: Não é possível participar (categoria incompatível, partida cheia, etc.)
+        '409':
+          description: Já está inscrito nesta partida
+
+  /matches/{matchId}/leave:
+    post:
+      tags:
+        - match
+      summary: Cancelar participação
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Participação cancelada
+        '400':
+          description: Muito próximo ao horário da partida (penalidade aplicada)
+
+  /matches/{matchId}/participants:
+    get:
+      tags:
+        - match
+      summary: Listar participantes da partida
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de participantes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  confirmados:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participante'
+                  listaEspera:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participante'
+
+    put:
+      tags:
+        - match
+      summary: Gerenciar participantes (aprovar/rejeitar - apenas organizador)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                acao:
+                  type: string
+                  enum: [aprovar, rejeitar, remover]
+      responses:
+        '200':
+          description: Ação realizada
+        '403':
+          description: Apenas organizador pode gerenciar
+
+  # RATING ENDPOINTS
+  /matches/{matchId}/ratings:
+    post:
+      tags:
+        - rating
+      summary: Avaliar partida (após realização)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                avaliacaoOrganizador:
+                  type: object
+                  properties:
+                    pontualidade:
+                      type: integer
+                      minimum: 1
+                      maximum: 5
+                    comunicacao:
+                      type: integer
+                      minimum: 1
+                      maximum: 5
+                    estrutura:
+                      type: integer
+                      minimum: 1
+                      maximum: 5
+                    comentario:
+                      type: string
+                avaliacoesJogadores:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      userId:
+                        type: integer
+                      presenca:
+                        type: boolean
+                      espirito:
+                        type: integer
+                        minimum: 1
+                        maximum: 5
+                      comprometimento:
+                        type: integer
+                        minimum: 1
+                        maximum: 5
+                      comentario:
+                        type: string
+      responses:
+        '201':
+          description: Avaliações registradas
+        '400':
+          description: Partida ainda não realizada ou já avaliada
+
+  /users/{userId}/ratings:
+    get:
+      tags:
+        - rating
+      summary: Ver avaliações de um usuário
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Histórico de avaliações
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comoJogador:
+                    $ref: '#/components/schemas/EstatisticasJogador'
+                  comoOrganizador:
+                    $ref: '#/components/schemas/EstatisticasOrganizador'
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
-    Order:
+    Usuario:
       type: object
       properties:
         id:
           type: integer
-          format: int64
-          example: 10
-        petId:
-          type: integer
-          format: int64
-          example: 198772
-        quantity:
-          type: integer
-          format: int32
-          example: 7
-        shipDate:
+        nome:
           type: string
-          format: date-time
-        status:
-          type: string
-          description: Order Status
-          example: approved
-          enum:
-            - placed
-            - approved
-            - delivered
-        complete:
-          type: boolean
-      xml:
-        name: order
-    Category:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        name:
-          type: string
-          example: Dogs
-      xml:
-        name: category
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        username:
-          type: string
-          example: theUser
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: James
         email:
           type: string
-          example: john@email.com
-        password:
+        categoria:
           type: string
-          example: '12345'
-        phone:
+        sexo:
           type: string
-          example: '12345'
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
-      xml:
-        name: user
-    Tag:
+
+    UsuarioCompleto:
       type: object
       properties:
         id:
           type: integer
-          format: int64
-        name:
+        nome:
           type: string
-      xml:
-        name: tag
-    Pet:
-      required:
-        - name
-        - photoUrls
+        email:
+          type: string
+        telefone:
+          type: string
+        sexo:
+          type: string
+        categoria:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        partidasJogadas:
+          type: integer
+        taxaComparecimento:
+          type: number
+        avaliacaoMedia:
+          type: number
+        dataCriacao:
+          type: string
+          format: date-time
+        padrinho:
+          type: object
+          properties:
+            id:
+              type: integer
+            nome:
+              type: string
+
+    UsuarioPublico:
       type: object
       properties:
         id:
           type: integer
-          format: int64
-          example: 10
-        name:
+        nome:
           type: string
-          example: doggie
-        category:
-          $ref: '#/components/schemas/Category'
-        photoUrls:
-          type: array
-          xml:
-            wrapped: true
-          items:
-            type: string
-            xml:
-              name: photoUrl
-        tags:
-          type: array
-          xml:
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/Tag'
+        categoria:
+          type: string
+        partidasJogadas:
+          type: integer
+        taxaComparecimento:
+          type: number
+        avaliacaoMedia:
+          type: number
+
+    Convite:
+      type: object
+      properties:
+        id:
+          type: integer
+        codigo:
+          type: string
+        emailConvidado:
+          type: string
         status:
           type: string
-          description: pet status in the store
-          enum:
-            - available
-            - pending
-            - sold
-      xml:
-        name: pet
-    ApiResponse:
+          enum: [pendente, usado, expirado]
+        dataGeracao:
+          type: string
+          format: date-time
+        dataValidade:
+          type: string
+          format: date-time
+        observacao:
+          type: string
+
+    Partida:
       type: object
       properties:
-        code:
+        id:
           type: integer
-          format: int32
-        type:
+        organizador:
+          $ref: '#/components/schemas/Usuario'
+        data:
           type: string
-        message:
+          format: date
+        horario:
           type: string
-      xml:
-        name: '##default'
-    Error:
+          format: time
+        local:
+          type: string
+        endereco:
+          type: string
+        categoria:
+          type: string
+        sexoPermitido:
+          type: string
+        maxParticipantes:
+          type: integer
+        participantesConfirmados:
+          type: integer
+        custoTotal:
+          type: number
+        custoIndividual:
+          type: number
+        status:
+          type: string
+          enum: [nova, emAdesao, confirmada, encerrada, realizada]
+        observacoes:
+          type: string
+        dataCriacao:
+          type: string
+          format: date-time
+
+    PartidaCompleta:
+      allOf:
+        - $ref: '#/components/schemas/Partida'
+        - type: object
+          properties:
+            participantes:
+              type: array
+              items:
+                $ref: '#/components/schemas/Participante'
+            listaEspera:
+              type: array
+              items:
+                $ref: '#/components/schemas/Participante'
+
+    Participante:
       type: object
       properties:
-        code:
+        usuario:
+          $ref: '#/components/schemas/UsuarioPublico'
+        status:
           type: string
-        message:
+          enum: [pendente, confirmado, rejeitado, desistiu]
+        dataInscricao:
           type: string
-      required:
-        - code
-        - message
-  requestBodies:
-    Pet:
-      description: Pet object that needs to be added to the store
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Pet'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Pet'
-    UserArray:
-      description: List of user object
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/User'
-  securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-          scopes:
-            "write:pets": modify pets in your account
-            "read:pets": read your pets
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header\
+          format: date-time
+        pagamentoConfirmado:
+          type: boolean
+
+    EstatisticasJogador:
+      type: object
+      properties:
+        totalPartidas:
+          type: integer
+        taxaComparecimento:
+          type: number
+        taxaDesistencia:
+          type: number
+        avaliacaoMedia:
+          type: number
+        ultimasAvaliacoes:
+          type: array
+          items:
+            type: object
+            properties:
+              partida:
+                type: string
+              data:
+                type: string
+                format: date
+              nota:
+                type: number
+              comentario:
+                type: string
+
+    EstatisticasOrganizador:
+      type: object
+      properties:
+        totalPartidasOrganizadas:
+          type: integer
+        taxaRealizacao:
+          type: number
+        avaliacaoMedia:
+          type: number
+        ultimasAvaliacoes:
+          type: array
+          items:
+            type: object
+            properties:
+              data:
+                type: string
+                format: date
+              nota:
+                type: number
+              comentario:
+                type: string
