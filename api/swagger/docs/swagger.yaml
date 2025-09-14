@@ -1,0 +1,67 @@
+basePath: /
+definitions:
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API para organização de partidas de vôlei
+  title: API Social Volei
+  version: "1.0"
+paths:
+  /users/:
+    get:
+      description: Retorna todos os usuários cadastrados (mockado por enquanto)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Lista todos os usuários
+      tags:
+      - users
+  /users/{id}:
+    get:
+      description: Retorna os dados de um usuário específico
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Busca usuário por ID
+      tags:
+      - users
+schemes:
+- http
+swagger: "2.0"
