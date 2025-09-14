@@ -17,5 +17,6 @@ func RegisterUserRoutes(r *gin.Engine) {
 	{
 		users.GET("/", controller.GetUsers)
 		users.GET("/:id", controller.GetUserByID)
+		users.POST("/", controller.CreateUser) // nova rota
 	}
 }

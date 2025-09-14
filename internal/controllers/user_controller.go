@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"socialVoleiAPI/internal/models"
 	"socialVoleiAPI/internal/services"
 
 	"github.com/gin-gonic/gin"
@@ -36,8 +37,6 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 // @Produce json
 // @Param id path int true "User ID"
 // @Success 200 {object} models.User
-// @Failure 400 {object} map[string]string
-// @Failure 404 {object} map[string]string
 // @Router /users/{id} [get]
 func (uc *UserController) GetUserByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
@@ -53,4 +52,29 @@ func (uc *UserController) GetUserByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+// CreateUser godoc
+// @Summary Cria um novo usuário
+// @Description Registra um usuário na plataforma
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body models.User true "Dados do usuário"
+// @Success 201 {object} models.User
+// @Router /users [post]
+func (uc *UserController) CreateUser(c *gin.Context) {
+	var input models.User
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "input inválido"})
+		return
+	}
+
+	createdUser, err := uc.service.CreateUser(input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "não foi possível criar o usuário"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, createdUser)
 }

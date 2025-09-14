@@ -5,16 +5,17 @@ import "socialVoleiAPI/internal/models"
 type UserRepository interface {
 	GetAll() ([]models.User, error)
 	GetByID(id int) (*models.User, error)
+	Create(user models.User) (*models.User, error)
 }
 
-type userRepository struct{}
+type userRepository struct {
+	users  []models.User
+	nextID int
+}
 
 func NewUserRepository() UserRepository {
-	return &userRepository{}
-}
-
-func (r *userRepository) GetAll() ([]models.User, error) {
-	users := []models.User{
+	// ✅ Carrega os dados mockados apenas uma vez, na criação do repositório
+	mockedUsers := []models.User{
 		{
 			ID:            1,
 			Name:          "Alice",
@@ -40,7 +41,15 @@ func (r *userRepository) GetAll() ([]models.User, error) {
 			Categoria:     "premium",
 		},
 	}
-	return users, nil
+
+	return &userRepository{
+		users:  mockedUsers,
+		nextID: 3, // Já temos 2 usuários mockados
+	}
+}
+
+func (r *userRepository) GetAll() ([]models.User, error) {
+	return r.users, nil
 }
 
 func (r *userRepository) GetByID(id int) (*models.User, error) {
@@ -51,4 +60,11 @@ func (r *userRepository) GetByID(id int) (*models.User, error) {
 		}
 	}
 	return nil, nil
+}
+
+func (r *userRepository) Create(user models.User) (*models.User, error) {
+	user.ID = r.nextID
+	r.nextID++
+	r.users = append(r.users, user)
+	return &user, nil
 }
