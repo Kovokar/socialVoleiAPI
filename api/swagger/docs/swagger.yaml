@@ -1,12 +1,69 @@
 basePath: /
 definitions:
+  models.Match:
+    properties:
+      categoria:
+        type: string
+      custoTotal:
+        type: number
+      data:
+        type: string
+      endereco:
+        type: string
+      horario:
+        type: string
+      id:
+        type: integer
+      local:
+        type: string
+      maxParticipantes:
+        type: integer
+      observacoes:
+        type: string
+      ownerId:
+        type: integer
+      participants:
+        items:
+          $ref: '#/definitions/models.Participant'
+        type: array
+      sexoPermitido:
+        type: string
+      status:
+        description: nova, emAdesao, confirmada, encerrada, realizada
+        type: string
+      waitingList:
+        items:
+          $ref: '#/definitions/models.Participant'
+        type: array
+    type: object
+  models.Participant:
+    properties:
+      name:
+        type: string
+      userId:
+        type: integer
+    type: object
   models.User:
     properties:
+      categoria:
+        type: string
+      codigoConvite:
+        type: string
       email:
         type: string
       id:
         type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
       name:
+        type: string
+      senha:
+        type: string
+      sexo:
+        type: string
+      telefone:
         type: string
     type: object
 host: localhost:8080
@@ -16,6 +73,217 @@ info:
   title: API Social Volei
   version: "1.0"
 paths:
+  /matches:
+    get:
+      description: Lista todas as partidas filtrando opcionalmente por status, categoria
+        ou intervalo de datas
+      parameters:
+      - description: Status da partida
+        enum:
+        - nova
+        - emAdesao
+        - confirmada
+        - encerrada
+        - realizada
+        in: query
+        name: status
+        type: string
+      - description: Categoria da partida
+        enum:
+        - iniciante
+        - intermediario
+        - avancado
+        - master
+        - mista
+        in: query
+        name: categoria
+        type: string
+      - description: Data inicial
+        format: date
+        in: query
+        name: dataInicio
+        type: string
+      - description: Data final
+        format: date
+        in: query
+        name: dataFim
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Match'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Lista partidas disponíveis
+      tags:
+      - match
+    post:
+      consumes:
+      - application/json
+      description: Cria uma partida com data, horário, local, categoria, sexo permitido
+        e limite de participantes
+      parameters:
+      - description: Dados da partida
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.Match'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Match'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Cria uma nova partida
+      tags:
+      - match
+  /matches/{matchId}:
+    get:
+      description: Retorna os detalhes completos de uma partida
+      parameters:
+      - description: ID da partida
+        in: path
+        name: matchId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Match'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Detalhes de uma partida específica
+      tags:
+      - match
+  /matches/{matchId}/join:
+    post:
+      description: Permite que um usuário entre na partida (ou lista de espera se
+        cheia)
+      parameters:
+      - description: ID da partida
+        in: path
+        name: matchId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Solicitar participação em partida
+      tags:
+      - match
+  /matches/{matchId}/leave:
+    post:
+      description: Permite que um usuário cancele sua participação na partida
+      parameters:
+      - description: ID da partida
+        in: path
+        name: matchId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Cancelar participação
+      tags:
+      - match
+  /matches/{matchId}/participants:
+    get:
+      description: Retorna confirmados e lista de espera
+      parameters:
+      - description: ID da partida
+        in: path
+        name: matchId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Listar participantes da partida
+      tags:
+      - match
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Registra um usuário na plataforma
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Cria um novo usuário
+      tags:
+      - users
   /users/:
     get:
       description: Retorna todos os usuários cadastrados (mockado por enquanto)
@@ -47,18 +315,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.User'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
       summary: Busca usuário por ID
       tags:
       - users
