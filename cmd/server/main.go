@@ -28,7 +28,7 @@ func main() {
 	})
 
 	// rotas
-	routes.RegisterUserRoutes(r)
+	routes.RegisterRoutes(r)
 
 	// rota do swagger
 	fmt.Println("[GIN-debug] GET    /swagger/index.html             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (3 handlers)")
