@@ -1,7 +1,12 @@
 package migrations
 
-import "gorm.io/gorm"
+import (
+	"socialVoleiAPI/internal/models"
+
+	"gorm.io/gorm"
+)
 
 func RunMigrations(db *gorm.DB) {
-
+	db.AutoMigrate(models.User{})
+	db.AutoMigrate(models.Invite{})
 }
