@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "socialVoleiAPI/cmd"
 
 func main() {
-	fmt.Println("noihnokln")
+	cmd.Run()
 }
