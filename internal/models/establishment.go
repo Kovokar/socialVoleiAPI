@@ -16,7 +16,7 @@ type Establishment struct {
 	Longitude float32        `json:"longitude" binding:"gte=-180,lte=180"`
 	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 
-	Arenas []Arena `gorm:"foreignKey:EstabelecimentoID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"arenas,omitempty"`
+	Arenas []Arena `gorm:"foreignKey:EstablishmentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"arenas,omitempty"`
 }
