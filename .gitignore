@@ -1,3 +1,5 @@
 .env
 rand/
 aa.txt
+.dockerfile
+docker-compose.yml
