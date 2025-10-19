@@ -25,8 +25,10 @@ build: ## Constrói as imagens Docker
 up: ## Sobe os containers (app + banco)
 	@$(DOCKER_COMPOSE) up --build
 
-up-detach: ## Sobe em modo background (detached)
+up-d: ## Sobe em modo background (detached)
 	@$(DOCKER_COMPOSE) up --build -d
+	@echo "🚀 Containers em execução:"
+	@$(DOCKER_COMPOSE) ps
 
 down: ## Para os containers
 	@$(DOCKER_COMPOSE) down
@@ -43,6 +45,14 @@ clean: ## Remove containers, volumes e imagens órfãs
 
 ps: ## Lista os containers em execução
 	@$(DOCKER_COMPOSE) ps
+	
+db-up: ## Sobe apenas o container do PostgreSQL
+	@$(DOCKER_COMPOSE) up -d db
+	@echo "🟢 Banco PostgreSQL em execução"
+	@$(DOCKER_COMPOSE) ps
+
+run:
+	@go run cmd/server/main.go 
 
 # =============================
 # 🧰 Auxiliares

@@ -20,7 +20,3 @@ type AvaliableTimes struct {
 
 	Arena Arena `gorm:"foreignKey:ArenaID" json:"-"`
 }
-
-func (AvaliableTimes) TableName() string {
-	return "reservation"
-}

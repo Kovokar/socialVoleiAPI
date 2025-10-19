@@ -8,5 +8,10 @@ import (
 
 func RunMigrations(db *gorm.DB) {
 	db.AutoMigrate(models.User{})
-	db.AutoMigrate(models.Invite{})
+	db.AutoMigrate(models.Arena{})
+	db.AutoMigrate(models.Establishment{})
+	db.AutoMigrate(models.AvaliableTimes{})
+	db.AutoMigrate(models.Match{})
+	db.AutoMigrate(models.Reservation{})
+	db.AutoMigrate(models.MatchParticipation{})
 }
