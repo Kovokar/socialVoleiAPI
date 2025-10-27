@@ -1,8 +1,9 @@
 package database
 
 import (
+	"fmt"
 	"log"
-	"socialVoleiAPI/internal/database/migrations"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,14 +12,16 @@ import (
 var db *gorm.DB
 
 func StartDb() {
-	strConn :=
-		`host=localhost 
-	user=app_user 
-	password=app_password 
-	dbname=app_db 
-	port=6543 
-	sslmode=disable`
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	name := os.Getenv("DB_NAME")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
 
+	strConn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		host, user, password, name, port,
+	)
 	conn, err := gorm.Open(postgres.Open(strConn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect to database: ", err)
@@ -31,7 +34,7 @@ func StartDb() {
 	config.SetMaxOpenConns(100)
 	config.SetMaxIdleConns(10)
 
-	migrations.RunMigrations(db)
+	// migrations.RunMigrations(db)
 }
 
 func GetDatabase() *gorm.DB {
