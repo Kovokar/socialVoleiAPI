@@ -11,6 +11,7 @@ func ConfigureRoutes(router *gin.Engine) *gin.Engine {
 
 	{
 		UserRoutes(main)
+		EstablishmentRoutes(main)
 		// AuthRoutes(main)
 		// BooksRoutes(main)
 		// UserRoutes(main)

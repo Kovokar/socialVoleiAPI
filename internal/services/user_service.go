@@ -55,7 +55,7 @@ func (s *UserService) GetUserByID(id string) (models.User, error) {
 	var teste models.User
 	intId, err := strconv.Atoi(id)
 	if err != nil {
-		return teste, fmt.Errorf("email é obrigatório")
+		return teste, fmt.Errorf("erro ao converter id para inteiro")
 	}
 	return s.repo.FindUserByID(teste, intId)
 }
