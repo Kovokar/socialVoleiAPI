@@ -19,7 +19,7 @@ func StartDb() {
 	password := os.Getenv("DB_PASSWORD")
 
 	strConn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=America/Sao_Paulo",
 		host, user, password, name, port,
 	)
 	conn, err := gorm.Open(postgres.Open(strConn), &gorm.Config{})
@@ -35,6 +35,7 @@ func StartDb() {
 	config.SetMaxIdleConns(10)
 
 	// migrations.RunMigrations(db)
+	log.Println("✅ Banco de dados conectado com sucesso.")
 }
 
 func GetDatabase() *gorm.DB {
