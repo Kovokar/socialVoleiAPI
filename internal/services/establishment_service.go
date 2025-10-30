@@ -42,6 +42,38 @@ func (s *EstablishmentService) CreateEstablishment(req *models.Establishment) er
 	return s.repo.CreateEstablishment(Establishment)
 }
 
+func (s *EstablishmentService) BulkCreateEstablishment(req []models.Establishment) error {
+	var establishments []models.Establishment
+
+	for _, val := range req {
+		// Validação de campos obrigatórios
+		if err := validations.ValidateRequiredFields(
+			validations.Field{Name: "Nome", Value: val.Name},
+			validations.Field{Name: "CNPJ", Value: val.CNPJ},
+			validations.Field{Name: "Email", Value: val.Email},
+		); err != nil {
+			return fmt.Errorf("erro no estabelecimento %s: %w", val.Name, err)
+		}
+
+		formatCNPJ := utils.RmMaskCNPJ(val.CNPJ)
+		formatPhone := utils.RmMaskPhone(val.Phone)
+
+		e := models.Establishment{
+			Name:      val.Name,
+			Email:     val.Email,
+			Phone:     formatPhone,
+			CNPJ:      formatCNPJ,
+			Latitude:  val.Latitude,
+			Longitude: val.Longitude,
+		}
+
+		establishments = append(establishments, e)
+	}
+
+	// Envia o slice para o repositório
+	return s.repo.BulkCreateEstablishment(&establishments)
+}
+
 func (s *EstablishmentService) GetAllEstablishments() ([]models.Establishment, error) {
 	return s.repo.FindAllEstablishments()
 }

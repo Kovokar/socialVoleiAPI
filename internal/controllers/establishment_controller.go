@@ -35,6 +35,20 @@ func (uc *EstablishmentController) CreateEstablishment(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, EstablishmentToResponse(&establishment))
 }
 
+func (uc *EstablishmentController) BulkCreateEstablishment(ctx *gin.Context) {
+	var establishments []models.Establishment
+
+	if err := ctx.ShouldBindJSON(&establishments); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := uc.service.BulkCreateEstablishment(establishments); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+}
+
 func (uc *EstablishmentController) GetEstablishments(ctx *gin.Context) {
 
 	estabs, err := uc.service.GetAllEstablishments()

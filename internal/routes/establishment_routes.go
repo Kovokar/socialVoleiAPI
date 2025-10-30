@@ -22,5 +22,8 @@ func EstablishmentRoutes(router *gin.RouterGroup) {
 		estab.GET("/", estabController.GetEstablishments)
 		estab.GET("/:id", estabController.GetEstablishmentByID)
 		estab.POST("/", estabController.CreateEstablishment)
+		estab.POST("/bulk", estabController.BulkCreateEstablishment)
+		// estab.PUT("/:id", estabController.EditBook)
+		// estab.DELETE("/:id", estabController.DeleteBook)
 	}
 }

@@ -18,6 +18,10 @@ func (r *EstablishmentRepository) CreateEstablishment(Establishment *models.Esta
 	return r.db.Create(Establishment).Error
 }
 
+func (r *EstablishmentRepository) BulkCreateEstablishment(Establishments *[]models.Establishment) error {
+	return r.db.Create(Establishments).Error
+}
+
 func (r *EstablishmentRepository) FindAllEstablishments() ([]models.Establishment, error) {
 	var Establishments []models.Establishment
 	err := r.db.Find(&Establishments).Error
