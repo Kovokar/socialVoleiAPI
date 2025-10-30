@@ -17,14 +17,14 @@ const (
 
 type User struct {
 	ID        uint64         `gorm:"primaryKey;autoIncrement"`
-	Name      string         `gorm:"size:100;not null"`
-	Birthdate time.Time      `gorm:"not null"`
-	Email     string         `gorm:"size:100;uniqueIndex;not null"`
-	Password  string         `gorm:"not null"`
-	Phone     string         `gorm:"size:50"`
-	Gender    GenderType     `gorm:"type:text;default:'other'"`
-	Latitude  float64        `json:"latitude" binding:"gte=-90,lte=90"`
-	Longitude float64        `json:"longitude" binding:"gte=-180,lte=180"`
+	Name      string         `gorm:"size:100;not null" binding:"required,min=3,max=100"`
+	Birthdate time.Time      `gorm:"not null" binding:"required"`
+	Email     string         `gorm:"size:100;uniqueIndex;not null" binding:"required,email"`
+	Password  string         `gorm:"not null" binding:"required"`
+	Phone     string         `gorm:"size:50" binding:"required,min=9,max=20"`
+	Gender    GenderType     `gorm:"type:text;default:'other'" binding:"oneof=male female other"`
+	Latitude  float64        `json:"latitude" binding:"gte=-90,lte=90,required"`
+	Longitude float64        `json:"longitude" binding:"gte=-180,lte=180, required"`
 	Photo     string         `gorm:"default:'null'" json:"photo"`
 	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
@@ -47,12 +47,12 @@ type UserLogin struct {
 // UsuarioResponse representa a resposta sem dados sensíveis
 type UserResponse struct {
 	ID        uint64     `json:"id"`
-	Name      string     `json:"name" binding:"required,min=3,max=100"`
-	Birthdate time.Time  `json:"birthdate" binding:"required"`
-	Email     string     `json:"email" binding:"required,email"`
-	Phone     string     `json:"phone" binding:"required,min=9,max=20"`
-	Gender    GenderType `json:"gender" binding:"oneof=male female other"`
-	Latitude  float64    `json:"latitude" binding:"gte=-90,lte=90"`
-	Longitude float64    `json:"longitude" binding:"gte=-180,lte=180"`
+	Name      string     `json:"name"`
+	Birthdate time.Time  `json:"birthdate" `
+	Email     string     `json:"email"`
+	Phone     string     `json:"phone"`
+	Gender    GenderType `json:"gender"`
+	Latitude  float64    `json:"latitude"`
+	Longitude float64    `json:"longitude"`
 	Photo     string     `json:"photo"`
 }
