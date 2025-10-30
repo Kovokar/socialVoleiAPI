@@ -84,6 +84,34 @@ func (uc *EstablishmentController) GetEstablishmentByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusAccepted, EstablishmentToResponse(&establishment))
 }
 
+func (uc *EstablishmentController) UpdateEstablishment(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var req models.Establishment
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := uc.service.UpdateEstablishment(id, req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Estabelecimento atualizado com sucesso"})
+}
+
+func (uc *EstablishmentController) DeleteEstablishment(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if err := uc.service.DeleteEstablishment(id); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Estabelecimento removido com sucesso"})
+}
+
 func EstablishmentToResponse(estab *models.Establishment) models.EstablishmentResponse {
 	return models.EstablishmentResponse{
 		ID:        estab.ID,

@@ -87,3 +87,29 @@ func (s *EstablishmentService) GetEstablishmentByID(id string) (models.Establish
 	}
 	return s.repo.FindEstablishmentByID(estab, intId)
 }
+
+func (s *EstablishmentService) UpdateEstablishment(id string, req models.Establishment) error {
+	// Valida campos obrigatórios
+
+	formatCNPJ := utils.RmMaskCNPJ(req.CNPJ)
+	formatPhone := utils.RmMaskPhone(req.Phone)
+
+	updateData := models.Establishment{
+		Name:      req.Name,
+		Email:     req.Email,
+		Phone:     formatPhone,
+		CNPJ:      formatCNPJ,
+		Latitude:  req.Latitude,
+		Longitude: req.Longitude,
+	}
+
+	return s.repo.UpdateEstablishment(id, updateData)
+}
+
+func (s *EstablishmentService) DeleteEstablishment(id string) error {
+	if id == "" {
+		return fmt.Errorf("ID é obrigatório")
+	}
+
+	return s.repo.DeleteEstablishment(id)
+}
