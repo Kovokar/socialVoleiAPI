@@ -57,6 +57,10 @@ func (uc *UserController) GetUserByID(ctx *gin.Context) {
 	user, err := uc.service.GetUserByID(ctx.Param("id"))
 
 	if err != nil {
+		if err.Error() == "record not found" {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error: ": "Id Não Encontrado"})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}

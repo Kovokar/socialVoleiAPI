@@ -2,6 +2,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"socialVoleiAPI/internal/models"
 	"socialVoleiAPI/internal/services"
@@ -57,6 +58,11 @@ func (uc *EstablishmentController) GetEstablishmentByID(ctx *gin.Context) {
 	establishment, err := uc.service.GetEstablishmentByID(ctx.Param("id"))
 
 	if err != nil {
+		fmt.Println(err.Error())
+		if err.Error() == "record not found" {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error: ": "Id Não Encontrado"})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error: ": err.Error()})
 		return
 	}
