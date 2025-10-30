@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Função que registra as rotas relacionadas a "books"
 func EstablishmentRoutes(router *gin.RouterGroup) {
 
 	db := database.GetDatabase()
