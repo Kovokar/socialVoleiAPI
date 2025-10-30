@@ -5,6 +5,7 @@ import (
 	"socialVoleiAPI/internal/models"
 	"socialVoleiAPI/internal/repositories"
 	"socialVoleiAPI/internal/utils"
+	"socialVoleiAPI/internal/utils/validations"
 	"strconv"
 	"time"
 )
@@ -19,8 +20,17 @@ func NewUserService(repo *repositories.UserRepository) *UserService {
 
 func (s *UserService) CreateUser(req *models.User) error {
 
-	if req.Email == "" {
-		return fmt.Errorf("email é obrigatório")
+	fmt.Println("res: ", req.Birthdate)
+
+	if err := validations.ValidateRequiredFields(
+		validations.Field{Name: "Nome", Value: req.Name},
+		validations.Field{Name: "Senha", Value: req.Password},
+		validations.Field{Name: "Email", Value: req.Email},
+		validations.Field{Name: "Birthdate", Value: req.Birthdate},
+		validations.Field{Name: "Latitude", Value: req.Latitude},
+		validations.Field{Name: "Longitude", Value: req.Latitude},
+	); err != nil {
+		return err
 	}
 
 	parsedBirthdate, err := time.Parse("2006-01-02", req.Birthdate.Format("2006-01-02"))

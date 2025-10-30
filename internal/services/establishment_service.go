@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"socialVoleiAPI/internal/models"
 	"socialVoleiAPI/internal/repositories"
+	"socialVoleiAPI/internal/utils"
+	"socialVoleiAPI/internal/utils/validations"
 	"strconv"
 )
 
@@ -17,18 +19,22 @@ func NewEstablishmentService(repo *repositories.EstablishmentRepository) *Establ
 
 func (s *EstablishmentService) CreateEstablishment(req *models.Establishment) error {
 
-	if req.Name == "" {
-		return fmt.Errorf("Nome é obrigatório")
+	if err := validations.ValidateRequiredFields(
+		validations.Field{Name: "Nome", Value: req.Name},
+		validations.Field{Name: "CNPJ", Value: req.CNPJ},
+		validations.Field{Name: "Email", Value: req.Email},
+	); err != nil {
+		return err
 	}
-	if req.CNPJ == "" {
-		return fmt.Errorf("CNPJ é obrigatório")
-	}
+
+	formatCNPJ, formatPhone := utils.RmMaskCNPJ(req.CNPJ), utils.RmMaskPhone(req.Phone)
+	fmt.Println(formatCNPJ, formatPhone)
 
 	Establishment := &models.Establishment{
 		Name:      req.Name,
 		Email:     req.Email,
-		Phone:     req.Phone,
-		CNPJ:      req.CNPJ,
+		Phone:     formatPhone,
+		CNPJ:      formatCNPJ,
 		Latitude:  req.Latitude,
 		Longitude: req.Longitude,
 	}
